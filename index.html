@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>headmap SOPs</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --burgundy:#55253b; --burg-1:#491e31; --burg-2:#3c1626;
+  --burg-p1:#612a44; --burg-p2:#763454; --burg-p3:#924168;
+  --beige:#f7eacf; --beige-1:#efe0c3; --beige-2:#e6d5b8;
+  --beige-3:#decbae; --beige-4:#d5bfa0; --beige-p1:#fff8e6;
+  --blue:#1281ff; --blue-1:#2154ed; --blue-p1:#4fa4ff;
+  --danger:#e84040; --r:6px;
+  --bg:#f7eacf; --bg2:#efe0c3; --bg3:#e6d5b8;
+  --surface:#fff8e6; --border:#decbae; --border2:#d5bfa0;
+  --text:#55253b; --text2:#763454; --text3:#924168;
+  --accent:#1281ff; --accent2:#2154ed;
+}
+:root.theme-burg {
+  --bg:#55253b; --bg2:#491e31; --bg3:#3c1626;
+  --surface:#612a44; --border:#763454; --border2:#924168;
+  --text:#f7eacf; --text2:#efe0c3; --text3:#decbae;
+  --accent:#4fa4ff; --accent2:#1281ff;
+}
+:root.theme-white {
+  --bg:#ffffff; --bg2:#f5f5f5; --bg3:#ebebeb;
+  --surface:#ffffff; --border:#e0e0e0; --border2:#cccccc;
+  --text:#55253b; --text2:#763454; --text3:#999999;
+  --accent:#1281ff; --accent2:#2154ed;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; transition:background-color .22s,border-color .22s,color .18s; }
+body { font-family:'Poppins',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; font-size:13px; }
+
+header { display:flex; align-items:center; justify-content:space-between; padding:0 20px; height:52px; background:var(--burgundy); position:sticky; top:0; z-index:200; flex-shrink:0; }
+:root.theme-burg header { background:var(--burg-2); border-bottom:1px solid var(--burg-p1); }
+.logo { display:flex; align-items:center; gap:9px; }
+.logo-mark svg { width:28px; height:28px; display:block; }
+.logo-wordmark { font-size:15px; font-weight:700; color:var(--beige); letter-spacing:-.3px; line-height:1; }
+.logo-wordmark span { color:var(--blue-p1); }
+.logo-sub { font-size:8px; font-weight:400; color:rgba(247,234,207,.45); letter-spacing:1.4px; text-transform:uppercase; display:block; margin-top:2px; }
+.hdr-right { display:flex; align-items:center; gap:7px; }
+.btn { font-family:'Poppins',sans-serif; font-size:11px; font-weight:600; padding:6px 12px; border-radius:var(--r); border:none; cursor:pointer; display:inline-flex; align-items:center; gap:5px; transition:all .15s; letter-spacing:.2px; }
+.btn-ghost { background:rgba(247,234,207,.1); color:var(--beige); border:1px solid rgba(247,234,207,.2); }
+.btn-ghost:hover { background:rgba(247,234,207,.2); }
+.btn-primary { background:var(--blue); color:#fff; }
+.btn-primary:hover { background:var(--blue-1); }
+.btn-sm { font-size:10px; padding:5px 9px; }
+
+.tab-bar { display:flex; align-items:stretch; background:var(--burg-2); border-bottom:1px solid rgba(247,234,207,.12); flex-shrink:0; padding:0 20px; gap:2px; }
+:root.theme-white .tab-bar { background:var(--burgundy); }
+.tab-btn { font-family:'Poppins',sans-serif; font-size:10.5px; font-weight:600; color:rgba(247,234,207,.5); background:transparent; border:none; cursor:pointer; padding:9px 15px; letter-spacing:.5px; text-transform:uppercase; border-bottom:2px solid transparent; transition:all .15s; display:flex; align-items:center; gap:6px; }
+.tab-btn:hover { color:rgba(247,234,207,.85); }
+.tab-btn.active { color:var(--beige); border-bottom-color:var(--blue-p1); }
+.tab-badge { background:var(--blue); color:#fff; font-size:9px; font-weight:700; padding:1px 5px; border-radius:8px; line-height:1.4; }
+
+.app { display:flex; flex:1; overflow:hidden; min-height:0; }
+.tab-page { display:none; flex:1; overflow:hidden; min-height:0; }
+.tab-page.active { display:flex; }
+
+.sidebar { width:292px; min-width:292px; background:var(--surface); border-right:1px solid var(--border); display:flex; flex-direction:column; overflow-y:auto; }
+:root.theme-burg .sidebar { background:var(--bg2); }
+.sidebar-section { padding:13px 15px; border-bottom:1px solid var(--border); }
+.section-label { font-size:8.5px; font-weight:700; text-transform:uppercase; letter-spacing:1.4px; color:var(--text3); margin-bottom:9px; }
+
+.field { margin-bottom:9px; }
+.field label { font-size:10.5px; font-weight:500; color:var(--text2); display:block; margin-bottom:3px; }
+.field input,.field textarea,.field select { width:100%; background:var(--bg2); border:1px solid var(--border2); border-radius:var(--r); color:var(--text); font-family:'Poppins',sans-serif; font-size:11.5px; padding:7px 9px; outline:none; transition:border-color .15s; }
+:root.theme-burg .field input,:root.theme-burg .field textarea,:root.theme-burg .field select { background:var(--bg3); }
+.field input:focus,.field textarea:focus,.field select:focus { border-color:var(--accent); }
+.field textarea { resize:vertical; min-height:52px; }
+
+.role-item { display:flex; align-items:center; gap:7px; padding:7px 9px; background:var(--bg2); border:1px solid var(--border); border-radius:var(--r); margin-bottom:5px; }
+:root.theme-burg .role-item { background:var(--bg3); }
+.role-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+.role-name-input { flex:1; background:transparent; border:none; color:var(--text); font-family:'Poppins',sans-serif; font-size:11.5px; font-weight:500; outline:none; min-width:0; }
+.color-swatches { display:flex; gap:3px; }
+.swatch { width:12px; height:12px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:border-color .1s; flex-shrink:0; }
+.swatch.active { border-color:var(--text); }
+
+.step-item { background:var(--bg2); border:1px solid var(--border); border-radius:var(--r); margin-bottom:5px; overflow:hidden; }
+:root.theme-burg .step-item { background:var(--bg3); }
+.step-header { display:flex; align-items:center; gap:7px; padding:7px 9px; cursor:pointer; user-select:none; }
+.step-num { font-size:9.5px; font-weight:700; color:var(--text3); width:16px; flex-shrink:0; }
+.step-title-input { flex:1; background:transparent; border:none; color:var(--text); font-family:'Poppins',sans-serif; font-size:11.5px; font-weight:600; outline:none; min-width:0; }
+.step-body { padding:0 9px 9px; display:none; }
+.step-body.open { display:block; }
+.role-sub-label { font-size:8.5px; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-top:9px; margin-bottom:5px; padding-left:1px; }
+.task-row { display:flex; gap:5px; margin-bottom:4px; align-items:flex-start; }
+.task-row textarea { flex:1; background:var(--bg); border:1px solid var(--border2); border-radius:5px; color:var(--text); font-family:'Poppins',sans-serif; font-size:10.5px; padding:5px 7px; outline:none; resize:none; min-height:44px; transition:border-color .15s; }
+.task-row textarea:focus { border-color:var(--accent); }
+.btn-del { background:transparent; color:var(--danger); border:1px solid transparent; border-radius:5px; font-family:'Poppins',sans-serif; font-size:10px; cursor:pointer; padding:4px 6px; transition:all .15s; flex-shrink:0; }
+.btn-del:hover { background:rgba(232,64,64,.1); border-color:rgba(232,64,64,.3); }
+.btn-add { width:100%; background:transparent; border:1px dashed var(--border2); color:var(--text3); border-radius:var(--r); font-family:'Poppins',sans-serif; font-size:10.5px; font-weight:600; cursor:pointer; padding:5px 9px; margin-top:5px; display:flex; align-items:center; justify-content:center; gap:5px; transition:all .15s; }
+.btn-add:hover { background:rgba(18,129,255,.07); color:var(--accent); border-color:var(--accent); }
+
+.preview { flex:1; overflow:auto; padding:24px 24px 40px; background:var(--bg); }
+.preview-head { margin-bottom:18px; }
+.preview-title { font-size:19px; font-weight:700; color:var(--text); letter-spacing:-.3px; line-height:1.2; }
+.preview-sub { font-size:10px; font-weight:400; color:var(--text3); margin-top:3px; letter-spacing:.5px; text-transform:uppercase; }
+.sl-wrap { overflow-x:auto; }
+.sl-table { border-collapse:collapse; width:100%; min-width:600px; }
+.sl-table th,.sl-table td { border:1px solid var(--border2); vertical-align:top; padding:0; }
+.sl-table thead th { background:var(--burgundy); color:var(--beige); padding:9px 11px; font-size:10px; font-weight:600; text-align:center; min-width:130px; letter-spacing:.3px; }
+:root.theme-burg .sl-table thead th { background:var(--burg-2); }
+.sl-table thead th:first-child { min-width:80px; width:80px; text-align:left; padding-left:11px; background:var(--burg-2); }
+.sl-step-num { font-size:8.5px; font-weight:400; color:rgba(247,234,207,.4); display:block; margin-bottom:1px; }
+.sl-role-label { font-size:10.5px; font-weight:700; padding:10px 11px; vertical-align:middle; white-space:nowrap; border-right:3px solid; letter-spacing:.3px; text-transform:uppercase; }
+.sl-cell { padding:5px; min-height:52px; }
+.sl-task { border-radius:5px; padding:6px 9px; margin-bottom:4px; font-size:10.5px; line-height:1.45; border:1px solid transparent; }
+.sl-task b { display:block; font-weight:600; font-size:10.5px; margin-bottom:1px; }
+.sl-task small { opacity:.7; font-size:9.5px; }
+.sl-empty { color:var(--text3); font-size:10px; text-align:center; padding:14px 5px; opacity:.4; }
+
+/* TEAM TAB */
+.team-page { flex:1; overflow-y:auto; padding:26px; background:var(--bg); }
+.team-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:22px; flex-wrap:wrap; gap:12px; }
+.team-header h2 { font-size:18px; font-weight:700; letter-spacing:-.3px; }
+.team-header p { font-size:10px; color:var(--text3); text-transform:uppercase; letter-spacing:.8px; margin-top:3px; }
+.people-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:13px; }
+.person-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; transition:border-color .15s; }
+:root.theme-burg .person-card { background:var(--bg2); }
+.person-card:hover { border-color:var(--accent); }
+.person-card-header { padding:15px 15px 9px; display:flex; align-items:center; gap:11px; }
+.person-avatar { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; flex-shrink:0; line-height:1; }
+.person-name { font-size:12.5px; font-weight:700; color:var(--text); }
+.person-role-title { font-size:10px; color:var(--text3); margin-top:1px; }
+.person-card-body { padding:0 15px 11px; }
+.person-meta { font-size:10px; color:var(--text2); display:flex; align-items:center; gap:5px; margin-bottom:4px; }
+.person-division { display:inline-block; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.7px; padding:2px 7px; border-radius:10px; margin-bottom:7px; }
+.person-card-footer { padding:9px 15px; border-top:1px solid var(--border); display:flex; gap:6px; align-items:center; }
+.btn-use-role { flex:1; font-family:'Poppins',sans-serif; font-size:10px; font-weight:600; background:var(--bg2); color:var(--text2); border:1px solid var(--border2); border-radius:5px; padding:5px 8px; cursor:pointer; transition:all .15s; }
+:root.theme-burg .btn-use-role { background:var(--bg3); }
+.btn-use-role:hover { background:rgba(18,129,255,.1); color:var(--accent); border-color:var(--accent); }
+.btn-use-role.added { background:rgba(18,129,255,.12); color:var(--accent); border-color:var(--accent); }
+.btn-edit-p { font-family:'Poppins',sans-serif; font-size:10px; font-weight:600; background:transparent; color:var(--text3); border:1px solid var(--border2); border-radius:5px; padding:5px 8px; cursor:pointer; transition:all .15s; }
+.btn-edit-p:hover { color:var(--text); border-color:var(--border); }
+
+/* Quick-add strip in SOP sidebar */
+.quick-person-row { display:flex; align-items:center; gap:7px; margin-bottom:5px; }
+.quick-avatar { width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:8.5px; font-weight:700; flex-shrink:0; }
+.quick-name { flex:1; font-size:10.5px; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text); }
+.quick-add-btn { font-family:'Poppins',sans-serif; font-size:9.5px; font-weight:700; background:transparent; color:var(--accent); border:1px solid var(--accent); border-radius:4px; padding:2px 7px; cursor:pointer; transition:all .15s; flex-shrink:0; }
+.quick-add-btn:hover { background:rgba(18,129,255,.1); }
+
+/* Share bar */
+.share-bar { background:var(--bg2); border-top:1px solid var(--border); padding:8px 14px; display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.share-url { flex:1; background:var(--surface); border:1px solid var(--border2); border-radius:var(--r); color:var(--text3); font-family:'Poppins',sans-serif; font-size:10px; padding:5px 9px; outline:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; }
+.share-label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--text3); white-space:nowrap; }
+.copy-toast { font-size:9.5px; color:var(--accent); font-weight:600; opacity:0; transition:opacity .3s; white-space:nowrap; }
+.copy-toast.show { opacity:1; }
+
+/* Modal */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.48); z-index:500; display:flex; align-items:center; justify-content:center; padding:20px; }
+.modal-overlay.hidden { display:none; }
+.modal { background:var(--surface); border:1px solid var(--border); border-radius:12px; width:100%; max-width:410px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.28); }
+:root.theme-burg .modal { background:var(--bg2); }
+.modal-header { padding:17px 19px 13px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.modal-header h3 { font-size:14px; font-weight:700; }
+.modal-close { background:transparent; border:none; color:var(--text3); font-size:16px; cursor:pointer; padding:2px 5px; border-radius:4px; }
+.modal-close:hover { color:var(--text); }
+.modal-body { padding:17px 19px; display:flex; flex-direction:column; gap:9px; }
+.modal-footer { padding:13px 19px; border-top:1px solid var(--border); display:flex; gap:7px; justify-content:flex-end; }
+.avatar-row { display:flex; align-items:center; gap:11px; margin-bottom:3px; }
+.avatar-preview { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; flex-shrink:0; }
+.color-pick-row { display:flex; gap:5px; flex-wrap:wrap; }
+.ac-swatch { width:20px; height:20px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:border-color .1s; }
+.ac-swatch.active { border-color:var(--text); }
+
+/* Empty state */
+.team-empty { text-align:center; padding:56px 20px; opacity:.45; }
+.team-empty-icon { font-size:40px; margin-bottom:12px; }
+.team-empty h3 { font-size:14px; font-weight:600; margin-bottom:5px; }
+.team-empty p { font-size:10.5px; }
+
+.footer-bar { background:var(--burg-2); border-top:1px solid rgba(247,234,207,.08); padding:7px 20px; display:flex; align-items:center; gap:10px; font-size:10px; color:rgba(247,234,207,.35); flex-shrink:0; }
+.footer-bar a { color:var(--blue-p1); text-decoration:none; }
+::-webkit-scrollbar { width:5px; height:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 32 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 2H20Q28 2 28 12Q28 24 20 34H4Z" fill="none" stroke="#f7eacf" stroke-width="2.2"/>
+        <line x1="4" y1="2" x2="28" y2="2" stroke="#f7eacf" stroke-width="2.2"/>
+        <ellipse cx="14" cy="13" rx="5" ry="3" fill="#f7eacf"/>
+        <line x1="8" y1="19" x2="20" y2="19" stroke="#f7eacf" stroke-width="2"/>
+        <polygon points="8,26 12,22 16,26" fill="#f7eacf"/>
+        <polygon points="12,26 17,24 18,28" fill="#f7eacf"/>
+        <polygon points="22,8 30,12 22,16" fill="#4fa4ff"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-wordmark">headmap<span>&#9658;</span></div>
+      <span class="logo-sub">SOPs Builder</span>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <button class="btn btn-sm" id="theme-btn" style="background:rgba(247,234,207,.1);color:var(--beige);border:1px solid rgba(247,234,207,.2);" onclick="cycleTheme()">&#9681; Béžová</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportPNG()">&#8595; PNG</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportHTML()">&#8595; HTML</button>
+    <button class="btn btn-primary btn-sm" onclick="renderPreview()">&#8635; Náhľad</button>
+  </div>
+</header>
+
+<div class="tab-bar">
+  <button class="tab-btn active" id="tab-sop-btn" onclick="switchTab('sop')">&#9776; SOPs</button>
+  <button class="tab-btn" id="tab-team-btn" onclick="switchTab('team')">
+    &#9711; Tím <span class="tab-badge" id="team-badge">0</span>
+  </button>
+</div>
+
+<div class="app">
+
+  <!-- SOP TAB -->
+  <div class="tab-page active" id="tab-sop">
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="section-label">Diagram</div>
+        <div class="field">
+          <label>Názov SOP</label>
+          <input id="diag-title" type="text" value="" placeholder="Názov procesu..." oninput="renderPreview();saveToUrl()">
+        </div>
+        <div class="field">
+          <label>Verzia / popis</label>
+          <input id="diag-sub" type="text" value="" placeholder="SOP · v1.0" oninput="renderPreview();saveToUrl()">
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="section-label">Roly (riadky)</div>
+        <div id="roles-list"></div>
+        <button class="btn-add" onclick="addRole()">+ Vlastná rola</button>
+        <div id="people-quick"></div>
+      </div>
+      <div class="sidebar-section" style="flex:1">
+        <div class="section-label">Kroky (stĺpce)</div>
+        <div id="steps-list"></div>
+        <button class="btn-add" onclick="addStep()">+ Pridať krok</button>
+      </div>
+    </aside>
+    <main class="preview" style="display:flex;flex-direction:column;">
+      <div class="preview-head">
+        <div id="preview-title" class="preview-title"></div>
+        <div id="preview-sub" class="preview-sub"></div>
+      </div>
+      <div class="sl-wrap" style="flex:1"><div id="sl-output"></div></div>
+
+      <!-- Share bar inside preview -->
+      <div class="share-bar">
+        <span class="share-label">&#128279; Zdieľať:</span>
+        <input type="text" class="share-url" id="share-url" readonly onclick="copyUrl()" title="Klikni pre kopírovanie">
+        <button class="btn btn-ghost btn-sm" onclick="copyUrl()">Kopírovať</button>
+        <span class="copy-toast" id="copy-toast">&#10003; Skopírované!</span>
+      </div>
+    </main>
+  </div>
+
+  <!-- TEAM TAB -->
+  <div class="tab-page" id="tab-team">
+    <div class="team-page">
+      <div class="team-header">
+        <div>
+          <h2>Tím</h2>
+          <p>Pridaj ľudí a vlož ich do swimlane ako roly</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal()">+ Nová osoba</button>
+      </div>
+      <div id="people-grid" class="people-grid"></div>
+      <div id="team-empty" class="team-empty">
+        <div class="team-empty-icon">&#9711;</div>
+        <h3>Zatiaľ žiadni ľudia</h3>
+        <p>Pridaj prvého člena tímu tlačidlom vyššie</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer-bar">
+  <span>headmap SOPs &middot; <a href="https://www.headmap.sk" target="_blank">headmap.sk</a></span>
+  <span style="margin-left:auto">Od psychológie k rastu</span>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay hidden" id="person-modal" onclick="overlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-ttl">Nová osoba</h3>
+      <button class="modal-close" onclick="closeModal()">&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <div class="avatar-row">
+        <div class="avatar-preview" id="av-prev" style="background:#f0ddd0;color:#55253b">?</div>
+        <div>
+          <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--text3);margin-bottom:6px">Farba</div>
+          <div class="color-pick-row" id="ac-row"></div>
+        </div>
+      </div>
+      <div class="field"><label>Meno a priezvisko *</label><input id="p-name" type="text" placeholder="Juraj P" oninput="previewAv()"></div>
+      <div class="field"><label>Skratka (do swimlane) *</label><input id="p-short" type="text" placeholder="JP" maxlength="4" oninput="previewAv()"></div>
+      <div class="field"><label>Pozícia / titul</label><input id="p-pos" type="text" placeholder="HR Manager"></div>
+      <div class="field"><label>Divízia</label>
+        <select id="p-div">
+          <option value="">— žiadna —</option>
+          <option>Recruitment</option>
+          <option>Counseling</option>
+          <option value="HR Consulting &amp; Coaching">HR Consulting &amp; Coaching</option>
+          <option>Management</option>
+          <option>Operations</option>
+        </select>
+      </div>
+      <div class="field"><label>Email</label><input id="p-email" type="email" placeholder="meno@headmap.sk"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">Zrušiť</button>
+      <button class="btn btn-primary btn-sm" onclick="savePerson()">Uložiť</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── THEME ──
+const PALETTES={
+  beige:[
+    {bg:'#f0ddd0',text:'#55253b',border:'#924168',dot:'#55253b'},
+    {bg:'#d8eaff',text:'#0c3d7a',border:'#1281ff',dot:'#1281ff'},
+    {bg:'#efe0c3',text:'#614030',border:'#c8a070',dot:'#9a6040'},
+    {bg:'#d8f0e0',text:'#1a5030',border:'#40a060',dot:'#2d7a4a'},
+    {bg:'#faebd0',text:'#6a3a08',border:'#d08020',dot:'#b06010'},
+    {bg:'#f8dde8',text:'#6a1838',border:'#c84068',dot:'#a02850'},
+  ],
+  burg:[
+    {bg:'#612a44',text:'#f7eacf',border:'#924168',dot:'#f7eacf'},
+    {bg:'#182848',text:'#4fa4ff',border:'#1281ff',dot:'#4fa4ff'},
+    {bg:'#3c2010',text:'#f0c080',border:'#c08040',dot:'#e0a060'},
+    {bg:'#102818',text:'#60d090',border:'#308050',dot:'#50c080'},
+    {bg:'#382808',text:'#f0c050',border:'#c09020',dot:'#e0b040'},
+    {bg:'#3c1030',text:'#f090c0',border:'#c04080',dot:'#e060a0'},
+  ],
+  white:[
+    {bg:'#fdf0f4',text:'#55253b',border:'#924168',dot:'#55253b'},
+    {bg:'#eaf2ff',text:'#0c3d7a',border:'#1281ff',dot:'#1281ff'},
+    {bg:'#fdf5e6',text:'#614030',border:'#c8a070',dot:'#9a6040'},
+    {bg:'#edfaf3',text:'#1a5030',border:'#40a060',dot:'#2d7a4a'},
+    {bg:'#fff8eb',text:'#6a3a08',border:'#d08020',dot:'#b06010'},
+    {bg:'#fff0f5',text:'#6a1838',border:'#c84068',dot:'#a02850'},
+  ],
+};
+const AV_COLORS=[
+  {bg:'#f0ddd0',text:'#55253b'},{bg:'#d8eaff',text:'#0c3d7a'},
+  {bg:'#efe0c3',text:'#614030'},{bg:'#d8f0e0',text:'#1a5030'},
+  {bg:'#faebd0',text:'#6a3a08'},{bg:'#f8dde8',text:'#6a1838'},
+  {bg:'#55253b',text:'#f7eacf'},{bg:'#1281ff',text:'#ffffff'},
+  {bg:'#2d7a4a',text:'#ffffff'},{bg:'#b06010',text:'#ffffff'},
+];
+const DIV_COLORS={
+  'Recruitment':{bg:'#d8eaff',text:'#0c3d7a'},
+  'Counseling':{bg:'#d8f0e0',text:'#1a5030'},
+  'HR Consulting & Coaching':{bg:'#fdf0f4',text:'#55253b'},
+  'Management':{bg:'#faebd0',text:'#6a3a08'},
+  'Operations':{bg:'#ebe8ff',text:'#2d1a7a'},
+};
+let theme='beige', PALETTE=PALETTES.beige;
+function cycleTheme(){
+  const ord=['beige','burg','white'],lbl={beige:'&#9681; Béžová',burg:'&#9681; Bordová',white:'&#9681; Biela'};
+  theme=ord[(ord.indexOf(theme)+1)%3]; PALETTE=PALETTES[theme];
+  document.documentElement.className=theme==='burg'?'theme-burg':theme==='white'?'theme-white':'';
+  document.getElementById('theme-btn').innerHTML=lbl[theme];
+  renderSidebar();renderPreview();renderGrid();
+  saveToUrl();
+}
+
+// ── TABS ──
+function switchTab(t){
+  document.querySelectorAll('.tab-page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  document.getElementById('tab-'+t+'-btn').classList.add('active');
+}
+
+// ── STATE ──
+function r(){return Math.random().toString(36).slice(2,8);}
+let people=[];
+let roles=[];
+let steps=[];
+
+// ── URL STATE PERSISTENCE ──
+function saveToUrl(){
+  const state={
+    v:1,
+    theme,
+    title:document.getElementById('diag-title').value,
+    sub:document.getElementById('diag-sub').value,
+    people,
+    roles,
+    steps
+  };
+  const json=JSON.stringify(state);
+  let encoded;
+  try {
+    // Use base64url encoding for compactness
+    encoded=btoa(unescape(encodeURIComponent(json)));
+  } catch(e){
+    encoded=encodeURIComponent(json);
+  }
+  const url=location.href.split('?')[0]+'?d='+encoded;
+  history.replaceState(null,'',url);
+  const el=document.getElementById('share-url');
+  if(el)el.value=url;
+}
+
+function loadFromUrl(){
+  const params=new URLSearchParams(location.search);
+  const d=params.get('d');
+  if(!d)return false;
+  try {
+    let json;
+    try {
+      json=decodeURIComponent(escape(atob(d)));
+    } catch(e){
+      json=decodeURIComponent(d);
+    }
+    const state=JSON.parse(json);
+    if(!state||state.v!==1)return false;
+    people=state.people||[];
+    roles=state.roles||[];
+    steps=state.steps||[];
+    // Restore theme
+    if(state.theme&&['beige','burg','white'].includes(state.theme)){
+      theme=state.theme;
+      PALETTE=PALETTES[theme];
+      const lbl={beige:'&#9681; Béžová',burg:'&#9681; Bordová',white:'&#9681; Biela'};
+      document.documentElement.className=theme==='burg'?'theme-burg':theme==='white'?'theme-white':'';
+      document.getElementById('theme-btn').innerHTML=lbl[theme];
+    }
+    // Restore inputs
+    document.getElementById('diag-title').value=state.title||'';
+    document.getElementById('diag-sub').value=state.sub||'';
+    return true;
+  } catch(e){
+    console.warn('Failed to load state from URL:',e);
+    return false;
+  }
+}
+
+function copyUrl(){
+  const el=document.getElementById('share-url');
+  const url=el.value||location.href;
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(url).then(showCopyToast);
+  } else {
+    el.select();
+    document.execCommand('copy');
+    showCopyToast();
+  }
+}
+
+function showCopyToast(){
+  const t=document.getElementById('copy-toast');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+// ── PEOPLE GRID ──
+function renderGrid(){
+  document.getElementById('team-badge').textContent=people.length;
+  const grid=document.getElementById('people-grid');
+  const empty=document.getElementById('team-empty');
+  if(!people.length){grid.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  const usedPids=new Set(roles.filter(r=>r.pid).map(r=>r.pid));
+  grid.innerHTML=people.map(p=>{
+    const ac=AV_COLORS[p.ci]||AV_COLORS[0];
+    const dc=DIV_COLORS[p.div]||null;
+    const added=usedPids.has(p.id);
+    return `<div class="person-card">
+      <div class="person-card-header">
+        <div class="person-avatar" style="background:${ac.bg};color:${ac.text}">${esc(p.short)}</div>
+        <div><div class="person-name">${esc(p.name)}</div><div class="person-role-title">${esc(p.pos||'')}</div></div>
+      </div>
+      <div class="person-card-body">
+        ${p.div?`<div class="person-division" style="background:${dc?dc.bg:'#eee'};color:${dc?dc.text:'#333'}">${esc(p.div)}</div>`:''}
+        ${p.email?`<div class="person-meta"><span style="opacity:.5;font-size:11px">@</span>${esc(p.email)}</div>`:''}
+      </div>
+      <div class="person-card-footer">
+        <button class="btn-use-role${added?' added':''}" onclick="addPersonRole('${p.id}')">${added?'&#10003; V swimlane':'+ Do swimlane'}</button>
+        <button class="btn-edit-p" onclick="openModal('${p.id}')">&#9998;</button>
+        <button class="btn-del" onclick="delPerson('${p.id}')">&#10005;</button>
+      </div>
+    </div>`;
+  }).join('');
+  renderQuick();
+}
+
+function addPersonRole(pid){
+  const person=people.find(p=>p.id===pid);
+  if(!person)return;
+  if(roles.find(r=>r.pid===pid)){switchTab('sop');return;}
+  const ci=person.ci%PALETTE.length;
+  roles.push({id:r(),name:person.short,color:ci,pid:pid});
+  renderSidebar();renderPreview();renderGrid();
+  saveToUrl();
+  switchTab('sop');
+}
+
+function delPerson(pid){
+  people=people.filter(p=>p.id!==pid);
+  const lr=roles.find(r=>r.pid===pid);
+  if(lr){roles=roles.filter(r=>r.pid!==pid);steps.forEach(s=>{delete s.tasks[lr.id];});}
+  renderGrid();renderSidebar();renderPreview();
+  saveToUrl();
+}
+
+function renderQuick(){
+  const el=document.getElementById('people-quick');
+  const unused=people.filter(p=>!roles.find(r=>r.pid===p.id));
+  if(!unused.length){el.innerHTML='';return;}
+  el.innerHTML=`<div class="section-label" style="margin-top:10px">Z tímu</div>`+
+    unused.map(p=>{
+      const ac=AV_COLORS[p.ci]||AV_COLORS[0];
+      return `<div class="quick-person-row">
+        <div class="quick-avatar" style="background:${ac.bg};color:${ac.text}">${esc(p.short)}</div>
+        <span class="quick-name" title="${esc(p.name)}">${esc(p.name)}</span>
+        <button class="quick-add-btn" onclick="addPersonRole('${p.id}')">+</button>
+      </div>`;
+    }).join('');
+}
+
+// ── MODAL ──
+let editPid=null,selAc=0;
+function openModal(pid){
+  editPid=pid||null;
+  document.getElementById('modal-ttl').textContent=pid?'Upraviť osobu':'Nová osoba';
+  const acRow=document.getElementById('ac-row');
+  acRow.innerHTML=AV_COLORS.map((c,i)=>
+    `<div class="ac-swatch${i===selAc?' active':''}" style="background:${c.bg}" onclick="pickAc(${i})"></div>`
+  ).join('');
+  if(pid){
+    const p=people.find(x=>x.id===pid);if(!p)return;
+    document.getElementById('p-name').value=p.name;
+    document.getElementById('p-short').value=p.short;
+    document.getElementById('p-pos').value=p.pos||'';
+    document.getElementById('p-div').value=p.div||'';
+    document.getElementById('p-email').value=p.email||'';
+    selAc=p.ci||0;
+  } else {
+    ['p-name','p-short','p-pos','p-email'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('p-div').value='';
+    selAc=0;
+  }
+  previewAv();
+  document.getElementById('person-modal').classList.remove('hidden');
+}
+function closeModal(){document.getElementById('person-modal').classList.add('hidden');editPid=null;}
+function overlayClick(e){if(e.target===document.getElementById('person-modal'))closeModal();}
+function pickAc(i){
+  selAc=i;
+  document.querySelectorAll('.ac-swatch').forEach((el,j)=>{
+    el.classList.toggle('active',j===i);
+    el.style.borderColor=j===i?'var(--text)':'transparent';
+  });
+  previewAv();
+}
+function previewAv(){
+  const nm=document.getElementById('p-name').value;
+  const sh=document.getElementById('p-short').value;
+  const init=sh||(nm.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2))||'?';
+  const ac=AV_COLORS[selAc];
+  const el=document.getElementById('av-prev');
+  el.textContent=init;el.style.background=ac.bg;el.style.color=ac.text;
+}
+function savePerson(){
+  const name=document.getElementById('p-name').value.trim();
+  const short=document.getElementById('p-short').value.trim();
+  if(!name||!short){alert('Vyplň meno a skratku.');return;}
+  const data={name,short,pos:document.getElementById('p-pos').value.trim(),
+    div:document.getElementById('p-div').value,
+    email:document.getElementById('p-email').value.trim(),ci:selAc};
+  if(editPid){
+    const i=people.findIndex(p=>p.id===editPid);
+    if(i!==-1){people[i]={...people[i],...data};
+      const lr=roles.find(r=>r.pid===editPid);
+      if(lr){lr.name=short;lr.color=selAc%PALETTE.length;}
+    }
+  } else {
+    people.push({id:r(),...data});
+  }
+  closeModal();renderGrid();renderSidebar();renderPreview();
+  saveToUrl();
+}
+
+// ── SOP SIDEBAR ──
+function renderSidebar(){
+  document.getElementById('roles-list').innerHTML=roles.map((role,ri)=>{
+    const p=PALETTE[role.color];
+    const person=role.pid?people.find(x=>x.id===role.pid):null;
+    return `<div class="role-item">
+      <div class="role-dot" style="background:${p.dot}"></div>
+      <input class="role-name-input" value="${esc(role.name)}" oninput="roles[${ri}].name=this.value;renderPreview();saveToUrl()" placeholder="Rola">
+      ${person?`<span style="font-size:9px;color:var(--text3);white-space:nowrap;max-width:60px;overflow:hidden;text-overflow:ellipsis" title="${esc(person.name)}">${esc(person.name.split(' ')[0])}</span>`:''}
+      <div class="color-swatches">
+        ${PALETTE.map((p2,pi)=>`<div class="swatch ${role.color===pi?'active':''}" style="background:${p2.dot}" onclick="setRC(${ri},${pi})"></div>`).join('')}
+      </div>
+      <button class="btn-del" onclick="removeRole('${role.id}')">&#10005;</button>
+    </div>`;
+  }).join('');
+
+  document.getElementById('steps-list').innerHTML=steps.map((step,si)=>`
+    <div class="step-item">
+      <div class="step-header" onclick="toggleStep('${step.id}')">
+        <span class="step-num">${si+1}</span>
+        <input class="step-title-input" value="${esc(step.title)}" oninput="steps[${si}].title=this.value;renderPreview();saveToUrl()" onclick="event.stopPropagation()" placeholder="Krok">
+        <button class="btn-del" onclick="event.stopPropagation();removeStep('${step.id}')">&#10005;</button>
+      </div>
+      <div class="step-body" id="body-${step.id}">
+        ${roles.map(role=>{
+          const tasks=step.tasks[role.id]||[];
+          const p=PALETTE[role.color];
+          return `<div class="role-sub-label" style="color:${p.dot}">${esc(role.name)}</div>
+            ${tasks.map((task,ti)=>`<div class="task-row">
+              <textarea rows="2" placeholder="Úloha&#10;Popis..." oninput="updateTask('${step.id}','${role.id}',${ti},this.value)">${esc(task.title)}${task.sub?'\n'+esc(task.sub):''}</textarea>
+              <button class="btn-del" onclick="removeTask('${step.id}','${role.id}',${ti})">&#10005;</button>
+            </div>`).join('')}
+            <button class="btn-add" style="font-size:9.5px;padding:4px 7px;margin-top:3px" onclick="addTask('${step.id}','${role.id}')">+ ${esc(role.name)}</button>`;
+        }).join('')}
+      </div>
+    </div>`).join('');
+  renderQuick();
+}
+
+function toggleStep(id){document.getElementById('body-'+id).classList.toggle('open');}
+function setRC(ri,ci){roles[ri].color=ci;renderSidebar();renderPreview();saveToUrl();}
+function addRole(){roles.push({id:r(),name:'Nová rola',color:roles.length%PALETTE.length,pid:null});renderSidebar();renderPreview();saveToUrl();}
+function removeRole(id){
+  if(roles.length<=1)return;
+  roles=roles.filter(x=>x.id!==id);steps.forEach(s=>{delete s.tasks[id];});
+  renderSidebar();renderPreview();renderGrid();
+  saveToUrl();
+}
+function addStep(){steps.push({id:r(),title:'Nový krok',tasks:{}});renderSidebar();renderPreview();saveToUrl();}
+function removeStep(id){
+  if(steps.length<=1)return;
+  steps=steps.filter(x=>x.id!==id);renderSidebar();renderPreview();
+  saveToUrl();
+}
+function addTask(sid,rid){
+  const s=steps.find(x=>x.id===sid);
+  if(!s.tasks[rid])s.tasks[rid]=[];
+  s.tasks[rid].push({id:r(),title:'',sub:''});
+  renderSidebar();
+  setTimeout(()=>{const b=document.getElementById('body-'+sid);if(b)b.classList.add('open');},10);
+  renderPreview();
+  saveToUrl();
+}
+function removeTask(sid,rid,ti){
+  const s=steps.find(x=>x.id===sid);
+  if(s.tasks[rid])s.tasks[rid].splice(ti,1);
+  renderSidebar();renderPreview();
+  saveToUrl();
+}
+function updateTask(sid,rid,ti,val){
+  const s=steps.find(x=>x.id===sid);if(!s.tasks[rid])return;
+  const lines=val.split('\n');s.tasks[rid][ti].title=lines[0]||'';s.tasks[rid][ti].sub=lines.slice(1).join(' ').trim();
+  renderPreview();
+  saveToUrl();
+}
+
+// ── PREVIEW ──
+function renderPreview(){
+  document.getElementById('preview-title').textContent=document.getElementById('diag-title').value;
+  document.getElementById('preview-sub').textContent=document.getElementById('diag-sub').value;
+  const hb=theme==='burg'?'#3c1626':'#55253b';
+  let h=`<table class="sl-table" id="sl-tbl"><thead><tr><th style="background:${hb};color:#f7eacf"></th>`;
+  steps.forEach((s,i)=>{h+=`<th style="background:${hb};color:#f7eacf"><span class="sl-step-num">${i+1}</span>${esc(s.title)}</th>`;});
+  h+=`</tr></thead><tbody>`;
+  roles.forEach(role=>{
+    const p=PALETTE[role.color];
+    const ca=theme==='burg'?'28':'18';
+    h+=`<tr><td class="sl-role-label" style="color:${p.text};background:${p.bg};border-right-color:${p.border}">${esc(role.name)}</td>`;
+    steps.forEach(step=>{
+      const tasks=step.tasks[role.id]||[];
+      h+=`<td style="background:${p.bg}${ca}"><div class="sl-cell">`;
+      if(!tasks.length){h+=`<div class="sl-empty">—</div>`;}
+      else tasks.forEach(t=>{
+        if(!t.title&&!t.sub)return;
+        h+=`<div class="sl-task" style="background:${p.bg};border-color:${p.border};color:${p.text}">`;
+        if(t.title)h+=`<b>${esc(t.title)}</b>`;
+        if(t.sub)h+=`<small>${esc(t.sub)}</small>`;
+        h+=`</div>`;
+      });
+      h+=`</div></td>`;
+    });
+    h+=`</tr>`;
+  });
+  h+=`</tbody></table>`;
+  document.getElementById('sl-output').innerHTML=h;
+}
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+// ── EXPORT ──
+function exportPNG(){
+  const tbl=document.getElementById('sl-tbl');if(!tbl)return;
+  const scr=document.createElement('script');
+  scr.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+  scr.onload=()=>{
+    const bg=theme==='burg'?'#55253b':theme==='white'?'#ffffff':'#f7eacf';
+    html2canvas(tbl,{backgroundColor:bg,scale:2,useCORS:true}).then(c=>{
+      const a=document.createElement('a');a.download='headmap-sop.png';a.href=c.toDataURL('image/png');a.click();
+    });
+  };
+  document.head.appendChild(scr);
+}
+function exportHTML(){
+  const title=document.getElementById('diag-title').value;
+  const sub=document.getElementById('diag-sub').value;
+  const tbl=document.getElementById('sl-output').innerHTML;
+  const id=theme==='burg',iw=theme==='white';
+  const bg=id?'#55253b':iw?'#ffffff':'#f7eacf';
+  const brd=id?'#763454':iw?'#e0e0e0':'#decbae';
+  const tc=id?'#f7eacf':'#55253b';
+  const tc3=id?'#decbae':iw?'#999':'#924168';
+  const hdr=id?'#3c1626':'#55253b';
+  const out=`<!DOCTYPE html><html lang="sk"><head><meta charset="UTF-8"><title>${esc(title)}</title>
+<style>@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+body{font-family:'Poppins',sans-serif;background:${bg};color:${tc};padding:32px;margin:0}
+h1{font-size:19px;font-weight:700;margin-bottom:3px}p{font-size:9.5px;color:${tc3};margin-bottom:20px;text-transform:uppercase;letter-spacing:1px}
+.sl-table{border-collapse:collapse;width:100%;min-width:600px}.sl-table th,.sl-table td{border:1px solid ${brd};vertical-align:top;padding:0}
+.sl-table thead th{background:${hdr};color:#f7eacf;padding:9px 11px;font-size:10px;font-weight:600;text-align:center;min-width:130px}
+.sl-table thead th:first-child{min-width:80px;width:80px;text-align:left;padding-left:11px}
+.sl-step-num{font-size:8px;color:rgba(247,234,207,.4);display:block;margin-bottom:1px}
+.sl-role-label{font-size:10px;font-weight:700;padding:10px 11px;vertical-align:middle;white-space:nowrap;border-right:3px solid;letter-spacing:.3px;text-transform:uppercase}
+.sl-cell{padding:5px;min-height:50px}.sl-task{border-radius:5px;padding:6px 9px;margin-bottom:4px;font-size:10px;line-height:1.45;border:1px solid transparent}
+.sl-task b{display:block;font-weight:600;font-size:10px;margin-bottom:1px}.sl-task small{opacity:.7;font-size:9px}
+.sl-empty{font-size:9.5px;text-align:center;padding:14px 5px;opacity:.35;color:${tc3}}
+footer{margin-top:22px;font-size:9.5px;color:${tc3};opacity:.5;text-align:center}</style></head>
+<body><h1>${esc(title)}</h1><p>${esc(sub)}</p><div style="overflow-x:auto">${tbl}</div>
+<footer>headmap &middot; Od psychol&oacute;gie k rastu &middot; headmap.sk</footer></body></html>`;
+  const blob=new Blob([out],{type:'text/html'});
+  const a=document.createElement('a');a.download='headmap-sop.html';a.href=URL.createObjectURL(blob);a.click();
+}
+
+// ── INIT ──
+(function init(){
+  const loaded=loadFromUrl();
+  if(!loaded){
+    // Blank slate defaults
+    roles=[{id:r(),name:'Rola 1',color:0,pid:null}];
+    steps=[{id:r(),title:'Krok 1',tasks:{}}];
+  }
+  renderSidebar();renderPreview();renderGrid();
+  saveToUrl(); // populate share URL on load
+})();
+</script>
+</body>
+</html>
